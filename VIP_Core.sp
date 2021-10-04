@@ -23,6 +23,11 @@ enum struct Player
 		this.expiration = 0;
 	}
 	
+	int daysLeft()
+	{
+		return (this.expiration - GetTime()) / DAY_TO_SECONDS;
+	}
+	
 	bool isVip()
 	{
 		return this.expiration - GetTime() > 0;
@@ -33,6 +38,7 @@ Player g_aPlayers[MAXPLAYERS + 1];
 
 Database g_dbDatabase = null;
 
+GlobalForward g_fwdVipMenuOpen = null;
 GlobalForward g_fwdVipGiven = null;
 GlobalForward g_fwdVipLoaded = null;
 
@@ -58,6 +64,8 @@ public void OnPluginStart()
 	
 	HookEvent("round_start", Event_RoundStart);
 	
+	RegConsoleCmd("sm_vipmenu", Command_VipMenu);
+	
 	RegAdminCmd("sm_vip", Command_VIP, ADMFLAG_ROOT, "VIP Management");
 	RegAdminCmd("sm_addvip", Command_AddVIP, ADMFLAG_ROOT, "This command is used to add a vip using steamid")
 	
@@ -73,6 +81,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	
 	CreateNative("VIP_IsPlayerVIP", Native_IsPlayerVIP);
 	
+	g_fwdVipMenuOpen = new GlobalForward("VIP_OnMenuOpenned", ET_Event, Param_Cell, Param_Cell);
 	g_fwdVipLoaded = new GlobalForward("VIP_OnPlayerLoaded", ET_Event, Param_Cell);
 	g_fwdVipGiven = new GlobalForward("VIP_OnPlayerGiven", ET_Event, Param_Cell, Param_Cell);
 	
@@ -146,6 +155,31 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 /* */
 
 /* Commands */
+
+public Action Command_VipMenu(int client, int args)
+{
+	Menu menu = new Menu(Handler_VipMenu);
+	menu.SetTitle("%s VIP Menu (%d days left)\n ", PREFIX_MENU, g_aPlayers[client].daysLeft())
+	
+	any aResults = 0;
+	Call_StartForward(g_fwdVipMenuOpen);
+	Call_PushCell(client);
+	Call_PushCell(menu);
+	Call_Finish(aResults);
+	
+	menu.Display(client, MENU_TIME_FOREVER);
+	return Plugin_Handled;
+}
+
+public int Handler_VipMenu(Menu menu, MenuAction action, int client, int itemNum)
+{
+	if(action == MenuAction_Select)
+	{
+		char szBuffer[32];
+		menu.GetItem(itemNum, szBuffer, sizeof(szBuffer));
+		FakeClientCommand(client, "say /%s", szBuffer);
+	}
+}
 
 public Action Command_VIP(int client, int args)
 {

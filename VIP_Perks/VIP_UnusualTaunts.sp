@@ -93,6 +93,11 @@ public void TF2_OnConditionRemoved(int client, TFCond condition)
 	}
 }
 
+public void VIP_OnMenuOpenned(int client, Menu menu)
+{
+	menu.AddItem("utaunt", "Unusual Taunts");
+}
+
 /* */
 
 /* Commands */

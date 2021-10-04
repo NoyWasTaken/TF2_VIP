@@ -43,6 +43,11 @@ public void OnClientPostAdminCheck(int client)
 	g_iDelayTime[client] = 0;
 }
 
+public void VIP_OnMenuOpenned(int client, Menu menu)
+{
+	menu.AddItem("burp", "Burp!");
+}
+
 public Action Command_Burp(int client, int args)
 {
 	if (!VIP_IsPlayerVIP(client))
