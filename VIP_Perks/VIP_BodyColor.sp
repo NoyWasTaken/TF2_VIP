@@ -96,6 +96,11 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 	}
 }
 
+public void VIP_OnMenuOpenned(int client, Menu menu)
+{
+	menu.AddItem("color", "Color my Player");
+}
+
 /* */
 
 /* Commands */

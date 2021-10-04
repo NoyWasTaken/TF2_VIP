@@ -55,6 +55,11 @@ public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int iItemDe
 	return Plugin_Continue;
 }
 
+public void VIP_OnMenuOpenned(int client, Menu menu)
+{
+	menu.AddItem("golden", "Toggle Golden Statues");
+}
+
 /* Commands */
 
 public Action Command_Golden(int client, int args)

@@ -101,6 +101,11 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 	}
 }
 
+public void VIP_OnMenuOpenned(int client, Menu menu)
+{
+	menu.AddItem("trails", "Footprints Menu");
+}
+
 /* */
 
 /* Commands */

@@ -20,6 +20,14 @@
 */
 native bool VIP_IsPlayerVIP(int client);
 
+/**
+* Called when a vip player is openning the vip menu.
+*
+* @param client the vip players
+* @param menu the menu
+*/
+forward void VIP_OnMenuOpenned(int client, Menu menu);
+
 /*
 * Called when a vip player has been loaded.
 *
