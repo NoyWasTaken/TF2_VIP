@@ -56,7 +56,7 @@ int g_iColors[COLORS_AMOUNT][RGB_SIZE] = {
 
 public Plugin myinfo = 
 {
-	name = "[TF2] VIP - Weapon Color", 
+	name = "[TF2] VIP - Body Color", 
 	author = PLUGIN_AUTHOR, 
 	description = "", 
 	version = PLUGIN_VERSION, 
@@ -65,10 +65,9 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	g_hCookie = RegClientCookie("vip_weaponcolor", "Weapon color of VIP players", CookieAccess_Protected);
+	g_hCookie = RegClientCookie("vip_bodycolor", "Body color of VIP players", CookieAccess_Protected);
 	
-	RegConsoleCmd("sm_cw", Command_ColorWeapon, "Set Color Your Weapon (Short)");
-	RegConsoleCmd("sm_wcolor", Command_ColorWeapon, "Set Color Your Weapon");
+	RegConsoleCmd("sm_color", Command_BodyColor, "Set Your Body Color");
 }
 
 /* Events */
@@ -93,7 +92,7 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 	if (VIP_IsPlayerVIP(client))
 	{
 		if (g_iColor[client])
-			SetWeaponColors(client, g_iColors[g_iColor[client]][RGB_RED], g_iColors[g_iColor[client]][RGB_GREEN], g_iColors[g_iColor[client]][RGB_BLUE]);
+			SetEntityRenderColor(client, g_iColors[g_iColor[client]][RGB_RED], g_iColors[g_iColor[client]][RGB_GREEN], g_iColors[g_iColor[client]][RGB_BLUE]);
 	}
 }
 
@@ -101,7 +100,7 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 
 /* Commands */
 
-public Action Command_ColorWeapon(int client, int args)
+public Action Command_BodyColor(int client, int args)
 {
 	Menu_ShowColors(client);
 	return Plugin_Handled;
@@ -113,7 +112,7 @@ public Action Command_ColorWeapon(int client, int args)
 
 void Menu_ShowColors(int client)
 {
-	Menu menu = new Menu(Handler_WeaponColors);
+	Menu menu = new Menu(Handler_BodyColors);
 	menu.SetTitle("%s Select a Color\n ", PREFIX_MENU);
 	
 	for (int i = 0; i < sizeof(g_szColors); i++)
@@ -125,7 +124,7 @@ void Menu_ShowColors(int client)
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int Handler_WeaponColors(Menu menu, MenuAction action, int client, int itemNum)
+public int Handler_BodyColors(Menu menu, MenuAction action, int client, int itemNum)
 {
 	if (action == MenuAction_Cancel && itemNum == MenuCancel_ExitBack)
 	{
@@ -137,26 +136,8 @@ public int Handler_WeaponColors(Menu menu, MenuAction action, int client, int it
 		IntToString(itemNum, szBuffer, sizeof(szBuffer));
 		SetClientCookie(client, g_hCookie, szBuffer);
 		
-		SetWeaponColors(client, g_iColors[itemNum][RGB_RED], g_iColors[itemNum][RGB_GREEN], g_iColors[itemNum][RGB_BLUE]);
-		CPrintToChat(client, "%s Changed weapon color to: %s.", PREFIX, g_szColors[itemNum]);
-	}
-}
-
-/* */
-
-/* Functions */
-
-void SetWeaponColors(int client, int red, int green, int blue)
-{
-	int iWeapon;
-	for (int i = 0; i <= MELEE_SLOT; i++)
-	{
-		iWeapon = GetPlayerWeaponSlot(client, i);
-		if (iWeapon != -1)
-		{
-			SetEntityRenderMode(iWeapon, RENDER_TRANSCOLOR);
-			SetEntityRenderColor(iWeapon, red, green, blue, 255);
-		}
+		SetEntityRenderColor(client, g_iColors[itemNum][RGB_RED], g_iColors[itemNum][RGB_GREEN], g_iColors[itemNum][RGB_BLUE]);
+		CPrintToChat(client, "%s Changed body color to: %s.", PREFIX, g_szColors[itemNum]);
 	}
 }
 
