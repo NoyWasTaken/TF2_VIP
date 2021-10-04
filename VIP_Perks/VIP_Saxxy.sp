@@ -87,8 +87,6 @@ public Action Command_Saxxy(int client, int args)
 			if (iMelee > MaxClients && IsValidEdict(iMelee) && GetEntProp(iMelee, Prop_Send, "m_iItemDefinitionIndex") != SAXXY_INDEX)
 				TF2Items_GiveWeapon(client, SAXXY_INDEX);
 		}
-		
-		CPrintToChat(client, "%s You enabled the {axis}Saxxy{default}.", PREFIX);
 	}
 	
 	CPrintToChat(client, "%s %s the {axis}Saxxy{default}.", PREFIX, g_bSaxxy[client] ? "Enabled":"Disabled");
