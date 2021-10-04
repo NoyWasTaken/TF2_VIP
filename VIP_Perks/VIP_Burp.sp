@@ -6,7 +6,7 @@
 #define PLUGIN_AUTHOR "NoyB"
 #define PLUGIN_VERSION "1.0"
 
-#define SOUNDS_PATH "extreme/burp"
+#define SOUNDS_PATH "extreme/burps"
 #define SOUNDS_AMOUNT 5
 #define BURP_DELAY 2
 
