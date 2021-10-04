@@ -49,7 +49,7 @@ public Plugin myinfo =
 	author = PLUGIN_AUTHOR, 
 	description = "", 
 	version = PLUGIN_VERSION, 
-	url = "https://steamcommunity.com/id/s4muray"
+	url = "https://steamcommunity.com/id/noywastaken"
 };
 
 public void OnPluginStart()

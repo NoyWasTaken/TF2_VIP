@@ -67,6 +67,8 @@ public void OnPluginStart()
 {
 	g_hCookie = RegClientCookie("vip_weaponcolor", "Weapon color of VIP players", CookieAccess_Protected);
 	
+	HookEvent("post_inventory_application", Event_PlayerRegen);
+	
 	RegConsoleCmd("sm_cw", Command_ColorWeapon, "Set Color Your Weapon (Short)");
 	RegConsoleCmd("sm_wcolor", Command_ColorWeapon, "Set Color Your Weapon");
 }
@@ -75,12 +77,12 @@ public void OnPluginStart()
 
 public void OnClientCookiesCached(int client)
 {
-	if(VIP_IsPlayerVIP(client))
+	if (VIP_IsPlayerVIP(client))
 	{
 		char szBuffer[10];
 		GetClientCookie(client, g_hCookie, szBuffer, sizeof(szBuffer));
 		
-		if(szBuffer[0] != 0)
+		if (szBuffer[0] != 0)
 			g_iColor[client] = StringToInt(szBuffer);
 		else
 			g_iColor[client] = 0;
@@ -103,6 +105,12 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 
 public Action Command_ColorWeapon(int client, int args)
 {
+	if (!VIP_IsPlayerVIP(client))
+	{
+		CReplyToCommand(client, "%s You are not a {axis}VIP {default}member! type {axis}!vips {default}for info.", PREFIX);
+		return Plugin_Handled;
+	}
+	
 	Menu_ShowColors(client);
 	return Plugin_Handled;
 }
