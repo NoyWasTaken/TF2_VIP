@@ -37,15 +37,15 @@ GlobalForward g_fwdVipGiven = null;
 GlobalForward g_fwdVipLoaded = null;
 
 bool g_bLate = false;
-bool g_bWriting[MAXPLAYERS + 1] =  { false };
+bool g_bWriting[MAXPLAYERS + 1] = { false };
 
 int g_iRounds = 0;
-int g_iTarget[MAXPLAYERS + 1] =  { -1 };
-int g_iDuration[MAXPLAYERS + 1] =  { 0 };
+int g_iTarget[MAXPLAYERS + 1] = { -1 };
+int g_iDuration[MAXPLAYERS + 1] = { 0 };
 
 public Plugin myinfo = 
 {
-	name = "[TF2] VIP System", 
+	name = "[TF2] VIP - Core", 
 	author = PLUGIN_AUTHOR, 
 	description = "", 
 	version = PLUGIN_VERSION, 
@@ -124,6 +124,25 @@ public Action Event_RoundStart(Event event, char[] name, bool dontBroadcast)
 	g_iRounds++;
 }
 
+public Action OnClientSayCommand(int client, const char[] command, const char[] args)
+{
+	if (g_bWriting[client])
+	{
+		if (!strcmp(args[0], "-1"))
+		{
+			CPrintToChat(client, "%s Opreation aborted.", PREFIX);
+		} else {
+			g_iDuration[client] = StringToInt(args[0]);
+		}
+		
+		Menus_ShowPlayer(client);
+		g_bWriting[client] = false;
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
 /* */
 
 /* Commands */
@@ -177,7 +196,7 @@ public Action Command_AddVIP(int client, int args)
 	}
 	
 	SQL_AddOfflineVIP(szArg, iDuration);
-	ShowActivity2(client, PREFIX_ACTIVITY, "Gave a vip to \x02\"%s\" \x01for \x04%s \x01days.", szArg, addCommas(iDuration));
+	CShowActivity2(client, PREFIX_ACTIVITY, "Gave a vip to \x02\"%s\" \x01for \x04%s \x01days.", szArg, addCommas(iDuration));
 	
 	return Plugin_Handled;
 }
@@ -317,7 +336,7 @@ public int Handler_PlayerManagement(Menu menu, MenuAction action, int client, in
 			SQL_AddVIP(client);
 			OnClientPostAdminCheck(g_iTarget[client]);
 			
-			ShowActivity2(client, PREFIX_ACTIVITY, "Gave a vip to \x02%N \x01for \x04%s \x01days.", g_iTarget[client], addCommas(g_iDuration[client]));
+			CShowActivity2(client, PREFIX_ACTIVITY, "Gave a vip to \x02%N \x01for \x04%s \x01days.", g_iTarget[client], addCommas(g_iDuration[client]));
 			
 			g_iTarget[client] = -1;
 			g_iDuration[client] = 0;

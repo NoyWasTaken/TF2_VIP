@@ -67,7 +67,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	g_hCookie = RegClientCookie("vip_trail", "", CookieAccess_Protected);
+	g_hCookie = RegClientCookie("vip_trail", "Trail of VIP users", CookieAccess_Protected);
 	
 	HookEvent("post_inventory_application", Event_PlayerRegen);
 	
@@ -76,6 +76,20 @@ public void OnPluginStart()
 }
 
 /* Events */
+
+public void OnClientCookiesCached(int client)
+{
+	if (VIP_IsPlayerVIP(client))
+	{
+		char szBuffer[10];
+		GetClientCookie(client, g_hCookie, szBuffer, sizeof(szBuffer));
+		
+		if (szBuffer[0] != 0)
+			g_iTrail[client] = StringToInt(szBuffer);
+		else
+			g_iTrail[client] = 0;
+	}
+}
 
 public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 {
