@@ -9,7 +9,7 @@ An advanced VIP management system made for Play-IL's TF2 community.
 
 # Installation
 - Install all dependencies.
-- Download sound files and extract to your fastdl.
+- Download the [sound files](https://mega.nz/file/SrYmGTgB#cJlemrAtriYUEQqa4UNn3Y6wBzBgAbD0q9ZpSldPv0U) and extract to your fastdl.
 - Download the smx files and extract to your plugins folder.
 - Add an entry in your databases.cfg and call it "playil_vip"
 ```
