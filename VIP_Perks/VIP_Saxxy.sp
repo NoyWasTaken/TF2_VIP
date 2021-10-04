@@ -74,6 +74,8 @@ public Action Command_Saxxy(int client, int args)
 	}
 
 	g_bSaxxy[client] = !g_bSaxxy[client];
+	SetClientCookie(client, g_hCookie, g_bSaxxy[client] ? "true":"false");
+	
 	if(g_bSaxxy[client])
 	{
 		if (IsPlayerAlive(client))
