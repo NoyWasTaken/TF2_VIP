@@ -1,5 +1,5 @@
 # TF2 - VIP System
-An advanced VIP management system made for TF2.
+An advanced VIP management system made for Play-IL's TF2 community.
 
 # Dependencies
 ###### [TF2Items](https://forums.alliedmods.net/showthread.php?p=1050170) ######
