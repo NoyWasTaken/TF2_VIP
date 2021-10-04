@@ -68,5 +68,5 @@ An advanced VIP management system made for TF2.
 - Check VIP_Core.inc for information.
 
 # Credits
-- Da Vinci - Original plugin idea and design
+- Da Vinci - Original plugin idea and design, code in VIP_Unusual
 - Nanochip - Australium weapons functions from his [plugin](https://forums.alliedmods.net/showthread.php?p=2445005)
