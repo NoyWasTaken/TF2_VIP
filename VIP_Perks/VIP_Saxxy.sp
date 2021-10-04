@@ -35,15 +35,18 @@ public void OnPluginStart()
 
 /* Hooks, Events */
 
-public void VIP_OnPlayerLoaded(int client)
+public void OnClientCookiesCached(int client)
 {
-	char szBuffer[16];
-	GetClientCookie(client, g_hCookie, szBuffer, sizeof(szBuffer));
-	
-	if(!strcmp(szBuffer, "true"))
-		g_bSaxxy[client] = true;
-	else
-		g_bSaxxy[client] = false;
+	if(VIP_IsPlayerVIP(client))
+	{
+		char szBuffer[16];
+		GetClientCookie(client, g_hCookie, szBuffer, sizeof(szBuffer));
+		
+		if(!strcmp(szBuffer, "true"))
+			g_bSaxxy[client] = true;
+		else
+			g_bSaxxy[client] = false;
+	}
 }
 
 public void OnClientDisconnect(int client)
