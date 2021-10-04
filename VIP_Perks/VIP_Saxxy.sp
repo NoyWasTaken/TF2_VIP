@@ -26,7 +26,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	g_hCookie = RegClientCookie("vip_saxxy", "Spawn a saxxy weapon every round for VIP player", CookieAccess_Private);
+	g_hCookie = RegClientCookie("vip_saxxy", "Spawn a saxxy weapon every round for VIP player", CookieAccess_Protected);
 	
 	HookEvent("post_inventory_application", Event_PlayerRegen);
 	
