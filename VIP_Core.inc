@@ -46,7 +46,7 @@ public __pl_VIP_CORE_SetNTVOptional()
 
 public SharedPlugin __pl_VIP =
 {
-	name = "[TF2] VIP System",
+	name = "[TF2] VIP - Core",
 	file = "VIP_Core.smx",
 	#if defined REQUIRE_PLUGIN
 	required = 1,

@@ -76,7 +76,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_fwdVipLoaded = new GlobalForward("VIP_OnPlayerLoaded", ET_Event, Param_Cell);
 	g_fwdVipGiven = new GlobalForward("VIP_OnPlayerGiven", ET_Event, Param_Cell, Param_Cell);
 	
-	RegPluginLibrary("[TF2] VIP System");
+	RegPluginLibrary("[TF2] VIP - Core");
 	return APLRes_Success;
 }
 
