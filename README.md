@@ -50,6 +50,7 @@ An advanced VIP management system made for Play-IL's TF2 community.
 # Commands
 - sm_vip - (Default Access: Root) Opens the VIP management menu.
 - sm_addvip (Default Access: Root) Allows adding of a VIP using SteamID (offline adding).
+- sm_vipmenu (Default Access: Everyone) Opens the VIP menu.
 - sm_australium - (Default Access: Everyone) Toggles australium weapons (Requires VIP_Australium.smx).
 - sm_burp - (Default Access: Everyone) Make a burp sound (Requires VIP_Burp.smx).
 - sm_color - (Default Access: Everyone) Select a body color (Requires VIP_BodyColor.smx).
