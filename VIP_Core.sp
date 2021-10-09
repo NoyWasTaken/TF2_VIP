@@ -25,7 +25,8 @@ enum struct Player
 	
 	int daysLeft()
 	{
-		return (this.expiration - GetTime()) / DAY_TO_SECONDS;
+		int days = (this.expiration - GetTime()) / DAY_TO_SECONDS;
+		return days >= 0 ? days:0;
 	}
 	
 	bool isVip()
@@ -173,7 +174,7 @@ public Action Command_VipMenu(int client, int args)
 
 public int Handler_VipMenu(Menu menu, MenuAction action, int client, int itemNum)
 {
-	if(action == MenuAction_Select)
+	if (action == MenuAction_Select)
 	{
 		char szBuffer[32];
 		menu.GetItem(itemNum, szBuffer, sizeof(szBuffer));
@@ -259,7 +260,7 @@ public int Handler_MainMenu(Menu menu, MenuAction action, int client, int itemNu
 		{
 			Menus_SelectPlayer(client);
 		} else if (!strcmp(szInfo, "manage")) {
-			g_dbDatabase.Query(SQL_ManageVips, "SELECT * FROM `vips`", GetClientSerial(client));
+			SQL_ShowVips(client);
 		}
 	}
 }
@@ -397,7 +398,7 @@ public int Handler_ManageVIP(Menu menu, MenuAction action, int client, int itemN
 {
 	if (action == MenuAction_Cancel && itemNum == MenuCancel_ExitBack)
 	{
-		g_dbDatabase.Query(SQL_ManageVips, "SELECT * FROM `vips`", GetClientSerial(client));
+		SQL_ShowVips(client);
 	} else if (action == MenuAction_Select) {
 		char szAuth[32];
 		menu.GetItem(itemNum, szAuth, sizeof(szAuth));
@@ -456,6 +457,13 @@ void SQL_MakeConnection()
 	g_dbDatabase.Query(SQL_CheckForErrors, "CREATE TABLE IF NOT EXISTS `vips` (`auth` VARCHAR(32) NOT NULL, `name` VARCHAR(64) NOT NULL, `expiration` INT(10) NOT NULL, UNIQUE(`auth`))");
 }
 
+void SQL_ShowVips(int client)
+{
+	char szQuery[512];
+	FormatEx(szQuery, sizeof(szQuery), "SELECT * FROM `vips` WHERE `expiration` > %d", GetTime());
+	g_dbDatabase.Query(SQL_ManageVips, szQuery, GetClientSerial(client));
+}
+
 void SQL_LoadUser(int client)
 {
 	char szQuery[512];
@@ -492,9 +500,10 @@ void SQL_AddVIP(int client)
 {
 	int iTarget = g_iTarget[client];
 	int iExpiration = GetTime() + (g_iDuration[client] * DAY_TO_SECONDS);
+	g_aPlayers[iTarget].expiration = iExpiration;
 	
 	char szQuery[512];
-	FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', '%s', %d)", g_aPlayers[iTarget].auth, g_aPlayers[iTarget].name, iExpiration);
+	FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', '%s', %d) ON DUPLICATE KEY UPDATE `expiration` = %d", g_aPlayers[iTarget].auth, g_aPlayers[iTarget].name, iExpiration, iExpiration);
 	g_dbDatabase.Query(SQL_CheckForErrors, szQuery);
 }
 
