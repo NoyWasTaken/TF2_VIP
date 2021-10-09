@@ -43,6 +43,7 @@ An advanced VIP management system made for Play-IL's TF2 community.
 - Weapon size selection (Requires VIP_WeaponSize.smx).
 - Flags giving (Requires VIP_Flags.smx).
 - Connect and disconnect messages in chat and screen (Requires VIP_Messages.smx).
+- Killstreak effects, sheens and types selection (Requires VIP_KillStreak.smx).
 
 # Cvars
 - sm_vip_flags - (Default: t - CUSTOM6) Flags to give to the vip users (Requires VIP_Flags.smx).
@@ -64,6 +65,7 @@ An advanced VIP management system made for Play-IL's TF2 community.
 - sm_footprints - (Default Access: Everyone) Select a trail (Requires VIP_Trails.smx).
 - sm_utaunt - (Default Access: Everyone) Select an unusual effect for your taunts (Requires VIP_UnusualTaunts.smx).
 - sm_rw - (Default Access: Everyone) Change size of weapons (Requires VIP_WeaponResize.smx).
+- sm_ks (Default Access: Everyone) Select killstreak type, effect and sheen (Requires VIP_KillStreak.smx).
 
 # Natives & Forwards
 - Check VIP_Core.inc for information.
