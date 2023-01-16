@@ -1,5 +1,5 @@
 # TF2 - VIP System
-An advanced VIP management system made for TF2.
+An advanced VIP management system made for Play-IL's TF2 community.
 
 # Dependencies
 ###### [TF2Items](https://forums.alliedmods.net/showthread.php?p=1050170) ######
@@ -9,7 +9,7 @@ An advanced VIP management system made for TF2.
 
 # Installation
 - Install all dependencies.
-- Download sound files and extract to your fastdl.
+- Download the [sound files](https://mega.nz/file/SrYmGTgB#cJlemrAtriYUEQqa4UNn3Y6wBzBgAbD0q9ZpSldPv0U) and extract to your fastdl.
 - Download the smx files and extract to your plugins folder.
 - Add an entry in your databases.cfg and call it "playil_vip"
 ```
@@ -43,6 +43,7 @@ An advanced VIP management system made for TF2.
 - Weapon size selection (Requires VIP_WeaponSize.smx).
 - Flags giving (Requires VIP_Flags.smx).
 - Connect and disconnect messages in chat and screen (Requires VIP_Messages.smx).
+- Killstreak effects, sheens and types selection (Requires VIP_KillStreak.smx).
 
 # Cvars
 - sm_vip_flags - (Default: t - CUSTOM6) Flags to give to the vip users (Requires VIP_Flags.smx).
@@ -50,6 +51,7 @@ An advanced VIP management system made for TF2.
 # Commands
 - sm_vip - (Default Access: Root) Opens the VIP management menu.
 - sm_addvip (Default Access: Root) Allows adding of a VIP using SteamID (offline adding).
+- sm_vipmenu (Default Access: Everyone) Opens the VIP menu.
 - sm_australium - (Default Access: Everyone) Toggles australium weapons (Requires VIP_Australium.smx).
 - sm_burp - (Default Access: Everyone) Make a burp sound (Requires VIP_Burp.smx).
 - sm_color - (Default Access: Everyone) Select a body color (Requires VIP_BodyColor.smx).
@@ -63,10 +65,11 @@ An advanced VIP management system made for TF2.
 - sm_footprints - (Default Access: Everyone) Select a trail (Requires VIP_Trails.smx).
 - sm_utaunt - (Default Access: Everyone) Select an unusual effect for your taunts (Requires VIP_UnusualTaunts.smx).
 - sm_rw - (Default Access: Everyone) Change size of weapons (Requires VIP_WeaponResize.smx).
+- sm_ks (Default Access: Everyone) Select killstreak type, effect and sheen (Requires VIP_KillStreak.smx).
 
 # Natives & Forwards
 - Check VIP_Core.inc for information.
 
 # Credits
-- Da Vinci - Original plugin idea and design
+- Da Vinci - Original plugin idea and design, code in VIP_Unusual
 - Nanochip - Australium weapons functions from his [plugin](https://forums.alliedmods.net/showthread.php?p=2445005)
