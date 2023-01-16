@@ -37,7 +37,7 @@ enum struct Player
 
 Player g_aPlayers[MAXPLAYERS + 1];
 
-Database g_dbDatabase = null;
+Database g_dbConnection = null;
 
 GlobalForward g_fwdVipMenuOpen = null;
 GlobalForward g_fwdVipGiven = null;
@@ -124,8 +124,6 @@ public void OnClientPostAdminCheck(int client)
 	}
 	
 	GetClientName(client, g_aPlayers[client].name, sizeof(g_aPlayers[].name));
-	strcopy(g_aPlayers[client].name, sizeof(g_aPlayers[].name), SQL_SecureString(g_aPlayers[client].name));
-	
 	SQL_LoadUser(client);
 }
 
@@ -160,7 +158,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 public Action Command_VipMenu(int client, int args)
 {
 	Menu menu = new Menu(Handler_VipMenu);
-	menu.SetTitle("%s VIP Menu (%d days left)\n ", PREFIX_MENU, g_aPlayers[client].daysLeft())
+	menu.SetTitle("%s VIP Menu (%s days left)\n ", PREFIX_MENU, addCommas(g_aPlayers[client].daysLeft()))
 	
 	any aResults = 0;
 	Call_StartForward(g_fwdVipMenuOpen);
@@ -204,7 +202,7 @@ public Action Command_AddVIP(int client, int args)
 	
 	if (args != 2)
 	{
-		ReplyToCommand(client, "%s Usage: sm_addvip <steamid> <days>", PREFIX);
+		CReplyToCommand(client, "%s Usage: sm_addvip <steamid> <days>", PREFIX);
 		return Plugin_Handled;
 	}
 	
@@ -218,7 +216,7 @@ public Action Command_AddVIP(int client, int args)
 	{
 		delete rSteam;
 		
-		ReplyToCommand(client, "%s Invalid steamid entered, please try again.", PREFIX);
+		CReplyToCommand(client, "%s Invalid steamid entered, please try again.", PREFIX);
 		return Plugin_Handled;
 	}
 	
@@ -226,7 +224,7 @@ public Action Command_AddVIP(int client, int args)
 	int iDuration = StringToInt(szArg2);
 	if (iDuration < 0)
 	{
-		ReplyToCommand(client, "%s Invalid amount of days entered, please try again.", PREFIX);
+		CReplyToCommand(client, "%s Invalid amount of days entered, please try again.", PREFIX);
 		return Plugin_Handled;
 	}
 	
@@ -389,8 +387,8 @@ public int Handler_ManageVIPs(Menu menu, MenuAction action, int client, int item
 		menu.GetItem(itemNum, szAuth, sizeof(szAuth));
 		
 		char szQuery[512];
-		FormatEx(szQuery, sizeof(szQuery), "SELECT * FROM `vips` WHERE `auth` = '%s'", szAuth);
-		g_dbDatabase.Query(SQL_FetchVIP, szQuery, GetClientSerial(client));
+		SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "SELECT * FROM `vips` WHERE `auth` = '%s'", szAuth);
+		g_dbConnection.Query(SQL_FetchVIP, szQuery, GetClientSerial(client));
 	}
 }
 
@@ -446,36 +444,37 @@ char addCommas(int value, const char[] seperator = ",")
 
 void SQL_MakeConnection()
 {
-	if (g_dbDatabase != null)
-		delete g_dbDatabase;
+	if (g_dbConnection != null)
+		delete g_dbConnection;
 	
 	char szError[512];
-	g_dbDatabase = SQL_Connect(DATABASE_ENTRY, true, szError, sizeof(szError));
-	if (g_dbDatabase == null)
+	g_dbConnection = SQL_Connect(DATABASE_ENTRY, true, szError, sizeof(szError));
+	if (g_dbConnection == null)
 		SetFailState("Cannot connect to datbase error: %s", szError);
 	
-	g_dbDatabase.Query(SQL_CheckForErrors, "CREATE TABLE IF NOT EXISTS `vips` (`auth` VARCHAR(32) NOT NULL, `name` VARCHAR(64) NOT NULL, `expiration` INT(10) NOT NULL, UNIQUE(`auth`))");
+	g_dbConnection.SetCharset("utf8mb4");
+	g_dbConnection.Query(SQL_CheckForErrors, "CREATE TABLE IF NOT EXISTS `vips` (`auth` VARCHAR(32) NOT NULL, `name` VARCHAR(64) NOT NULL, `expiration` INT(10) NOT NULL, UNIQUE(`auth`))");
 }
 
 void SQL_ShowVips(int client)
 {
 	char szQuery[512];
-	FormatEx(szQuery, sizeof(szQuery), "SELECT * FROM `vips` WHERE `expiration` > %d", GetTime());
-	g_dbDatabase.Query(SQL_ManageVips, szQuery, GetClientSerial(client));
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "SELECT * FROM `vips` WHERE `expiration` > %d", GetTime());
+	g_dbConnection.Query(SQL_ManageVips, szQuery, GetClientSerial(client));
 }
 
 void SQL_LoadUser(int client)
 {
 	char szQuery[512];
-	FormatEx(szQuery, sizeof(szQuery), "SELECT `expiration` FROM `vips` WHERE `auth` = '%s'", g_aPlayers[client].auth);
-	g_dbDatabase.Query(SQL_LoadUser_CB, szQuery, GetClientSerial(client));
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "SELECT `expiration` FROM `vips` WHERE `auth` = '%s'", g_aPlayers[client].auth);
+	g_dbConnection.Query(SQL_LoadUser_CB, szQuery, GetClientSerial(client));
 }
 
 public void SQL_LoadUser_CB(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (strcmp(error, ""))
 	{
-		LogError("Database error, %s", error);
+		LogError("Database error: %s", error);
 		return;
 	}
 	
@@ -487,6 +486,10 @@ public void SQL_LoadUser_CB(Database db, DBResultSet results, const char[] error
 		{
 			g_aPlayers[iClient].expiration = iExpiration;
 			
+			// update name in the database
+			SQL_UpdatePlayer(iClient);
+			
+			// call the forward
 			Call_StartForward(g_fwdVipLoaded);
 			Call_PushCell(iClient);
 			Call_Finish();
@@ -503,8 +506,8 @@ void SQL_AddVIP(int client)
 	g_aPlayers[iTarget].expiration = iExpiration;
 	
 	char szQuery[512];
-	FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', '%s', %d) ON DUPLICATE KEY UPDATE `expiration` = %d", g_aPlayers[iTarget].auth, g_aPlayers[iTarget].name, iExpiration, iExpiration);
-	g_dbDatabase.Query(SQL_CheckForErrors, szQuery);
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', '%s', %d) ON DUPLICATE KEY UPDATE `expiration` = %d, `name` = '%s'", g_aPlayers[iTarget].auth, g_aPlayers[iTarget].name, iExpiration, iExpiration, g_aPlayers[iTarget].name);
+	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
 }
 
 void SQL_AddOfflineVIP(char[] auth, int duration)
@@ -512,15 +515,22 @@ void SQL_AddOfflineVIP(char[] auth, int duration)
 	int iExpiration = GetTime() + (duration * DAY_TO_SECONDS);
 	
 	char szQuery[512];
-	FormatEx(szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', 'Added Offline', %d) ON DUPLICATE KEY UPDATE `expiration` = %d", auth, iExpiration, iExpiration);
-	g_dbDatabase.Query(SQL_CheckForErrors, szQuery);
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', 'Added Offline', %d) ON DUPLICATE KEY UPDATE `expiration` = %d", auth, iExpiration, iExpiration);
+	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
+}
+
+void SQL_UpdatePlayer(int client)
+{
+	char szQuery[512];
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "UPDATE `vips` SET `name` = '%s' WHERE `auth` = '%s'", g_aPlayers[client].name, g_aPlayers[client].auth);
+	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
 }
 
 void SQL_RemoveVIP(char[] auth)
 {
 	char szQuery[512];
-	FormatEx(szQuery, sizeof(szQuery), "DELETE FROM `vips` WHERE `auth` = '%s'", auth);
-	g_dbDatabase.Query(SQL_CheckForErrors, szQuery);
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "DELETE FROM `vips` WHERE `auth` = '%s'", auth);
+	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
 	
 	for (int i = 1; i <= MaxClients; i++)
 	{
@@ -534,7 +544,7 @@ void SQL_RemoveVIP(char[] auth)
 
 public void SQL_ManageVips(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
 		return;
@@ -566,7 +576,7 @@ public void SQL_ManageVips(Database db, DBResultSet results, const char[] error,
 
 public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
 		return;
@@ -580,31 +590,22 @@ public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, a
 		results.FetchString(0, szAuth, sizeof(szAuth));
 		results.FetchString(1, szName, sizeof(szName));
 		
-		int iExpiration = results.FetchInt(2);
 		char szTime[64];
-		FormatTime(szTime, sizeof(szTime), "%d/%m/%Y %R", iExpiration);
+		FormatTime(szTime, sizeof(szTime), "%d/%m/%Y %R", results.FetchInt(2));
 		
 		Menu menu = new Menu(Handler_ManageVIP);
-		menu.SetTitle("%s Manage VIP - Viewing \"%s\"\nExpire Date: %s\n ", PREFIX_MENU, szName, szTime);
+		menu.SetTitle("%s Manage VIP - Viewing \"%s\"\nExpiration Date: %s\n ", PREFIX_MENU, szName, szTime);
 		menu.AddItem("remove", "Remove VIP");
 		menu.ExitBackButton = true;
 		menu.Display(iClient, MENU_TIME_FOREVER);
 	}
 }
 
-char SQL_SecureString(char[] string)
-{
-	char szEscaped[256];
-	g_dbDatabase.Escape(string, szEscaped, sizeof(szEscaped));
-	return szEscaped;
-}
-
 public void SQL_CheckForErrors(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (strcmp(error, ""))
 	{
-		LogError("Database error, %s", error);
-		return;
+		LogError("Database error: %s", error);
 	}
 }
 

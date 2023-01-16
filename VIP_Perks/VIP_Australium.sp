@@ -11,6 +11,8 @@
 
 #define ATTRIBUTES "2027 ; 1 ; 2022 ; 1 ; 542 ; 1"
 
+#define INVALID_WEAPON -1
+
 Handle g_hCookie;
 
 bool g_bAustralium[MAXPLAYERS + 1];
@@ -98,119 +100,132 @@ void giveAustraliums(int client)
 {
 	if (VIP_IsPlayerVIP(client) && g_bAustralium[client] && IsPlayerAlive(client))
 	{
-		int ammo = getAmmo(client, 0);
-		int clip = getClip(client, 0);
-		switch (getIndexOfWeaponSlot(client, 0))
+		// primary weapon
+		int weaponIndex = getIndexOfWeaponSlot(client, 0);
+		if(weaponIndex != INVALID_WEAPON)
 		{
-			case 13:
+			int ammo = getAmmo(client, 0);
+			int clip = getClip(client, 0);
+			switch (getIndexOfWeaponSlot(client, 0))
 			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_scattergun", 200, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 45:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_scattergun", 45, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 18:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_rocketlauncher", 205, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 228:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_rocketlauncher", 228, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 21:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_flamethrower", 208, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 19:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_grenadelauncher", 206, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 15:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_minigun", 202, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 424:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_minigun", 424, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 141:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_sentry_revenge", 141, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 36:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_syringegun_medic", 36, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 14:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_sniperrifle", 201, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
-			}
-			case 61:
-			{
-				TF2_RemoveWeaponSlot(client, 0);
-				spawnWeapon(client, "tf_weapon_revolver", 61, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 0);
-				setClip(client, clip, 0);
+				case 13:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_scattergun", 200, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 45:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_scattergun", 45, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 18:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_rocketlauncher", 205, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 228:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_rocketlauncher", 228, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 21:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_flamethrower", 208, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 19:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_grenadelauncher", 206, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 15:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_minigun", 202, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 424:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_minigun", 424, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 141:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_sentry_revenge", 141, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 36:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_syringegun_medic", 36, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 14:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_sniperrifle", 201, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
+				case 61:
+				{
+					TF2_RemoveWeaponSlot(client, 0);
+					spawnWeapon(client, "tf_weapon_revolver", 61, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 0);
+					setClip(client, clip, 0);
+				}
 			}
 		}
-		ammo = getAmmo(client, 1);
-		clip = getClip(client, 1);
-		switch (getIndexOfWeaponSlot(client, 1))
+		
+		// secondary weapon
+		weaponIndex = getIndexOfWeaponSlot(client, 1);
+		if(weaponIndex != INVALID_WEAPON)
 		{
-			case 16:
+			int ammo = getAmmo(client, 1);
+			int clip = getClip(client, 1);
+			switch (getIndexOfWeaponSlot(client, 1))
 			{
-				TF2_RemoveWeaponSlot(client, 1);
-				spawnWeapon(client, "tf_weapon_smg", 203, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 1);
-				setClip(client, clip, 1);
-			}
-			case 29:
-			{
-				TF2_RemoveWeaponSlot(client, 1);
-				spawnWeapon(client, "tf_weapon_medigun", 211, 69, 6, ATTRIBUTES, "nano_australium");
-			}
-			case 20:
-			{
-				TF2_RemoveWeaponSlot(client, 1);
-				spawnWeapon(client, "tf_weapon_pipebomblauncher", 207, 69, 6, ATTRIBUTES, "nano_australium");
-				setAmmo(client, ammo, 1);
-				setClip(client, clip, 1);
+				case 16:
+				{
+					TF2_RemoveWeaponSlot(client, 1);
+					spawnWeapon(client, "tf_weapon_smg", 203, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 1);
+					setClip(client, clip, 1);
+				}
+				case 29:
+				{
+					TF2_RemoveWeaponSlot(client, 1);
+					spawnWeapon(client, "tf_weapon_medigun", 211, 69, 6, ATTRIBUTES, "nano_australium");
+				}
+				case 20:
+				{
+					TF2_RemoveWeaponSlot(client, 1);
+					spawnWeapon(client, "tf_weapon_pipebomblauncher", 207, 69, 6, ATTRIBUTES, "nano_australium");
+					setAmmo(client, ammo, 1);
+					setClip(client, clip, 1);
+				}
 			}
 		}
+		
+		// melee
 		switch (getIndexOfWeaponSlot(client, 2))
 		{
 			case 38:
@@ -363,7 +378,7 @@ int getIndexOfWeaponSlot(int client, int slot)
 
 int getWeaponIndex(int weapon)
 {
-	return isValidEnt(weapon) ? GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex"):-1;
+	return isValidEnt(weapon) ? GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex") : INVALID_WEAPON;
 }
 
 bool isValidEnt(int ent)
