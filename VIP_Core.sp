@@ -124,7 +124,6 @@ public void OnClientPostAdminCheck(int client)
 	}
 	
 	GetClientName(client, g_aPlayers[client].name, sizeof(g_aPlayers[].name));
-	
 	SQL_LoadUser(client);
 }
 
@@ -473,7 +472,7 @@ void SQL_LoadUser(int client)
 
 public void SQL_LoadUser_CB(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (!strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
 		return;
@@ -487,6 +486,10 @@ public void SQL_LoadUser_CB(Database db, DBResultSet results, const char[] error
 		{
 			g_aPlayers[iClient].expiration = iExpiration;
 			
+			// update name in the database
+			SQL_UpdatePlayer(iClient);
+			
+			// call the forward
 			Call_StartForward(g_fwdVipLoaded);
 			Call_PushCell(iClient);
 			Call_Finish();
@@ -503,7 +506,7 @@ void SQL_AddVIP(int client)
 	g_aPlayers[iTarget].expiration = iExpiration;
 	
 	char szQuery[512];
-	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', '%s', %d) ON DUPLICATE KEY UPDATE `expiration` = %d", g_aPlayers[iTarget].auth, g_aPlayers[iTarget].name, iExpiration, iExpiration);
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', '%s', %d) ON DUPLICATE KEY UPDATE `expiration` = %d, `name` = '%s'", g_aPlayers[iTarget].auth, g_aPlayers[iTarget].name, iExpiration, iExpiration, g_aPlayers[iTarget].name);
 	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
 }
 
@@ -513,6 +516,13 @@ void SQL_AddOfflineVIP(char[] auth, int duration)
 	
 	char szQuery[512];
 	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "INSERT INTO `vips` (`auth`, `name`, `expiration`) VALUES ('%s', 'Added Offline', %d) ON DUPLICATE KEY UPDATE `expiration` = %d", auth, iExpiration, iExpiration);
+	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
+}
+
+void SQL_UpdatePlayer(int client)
+{
+	char szQuery[512];
+	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "UPDATE `vips` SET `name` = '%s' WHERE `auth` = '%s'", g_aPlayers[client].name, g_aPlayers[client].auth);
 	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
 }
 
@@ -534,7 +544,7 @@ void SQL_RemoveVIP(char[] auth)
 
 public void SQL_ManageVips(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (!strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
 		return;
@@ -566,7 +576,7 @@ public void SQL_ManageVips(Database db, DBResultSet results, const char[] error,
 
 public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (!strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
 		return;
@@ -594,10 +604,9 @@ public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, a
 
 public void SQL_CheckForErrors(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!StrEqual(error, ""))
+	if (!strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
-		return;
 	}
 }
 
