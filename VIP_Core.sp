@@ -159,7 +159,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 public Action Command_VipMenu(int client, int args)
 {
 	Menu menu = new Menu(Handler_VipMenu);
-	menu.SetTitle("%s VIP Menu (%d days left)\n ", PREFIX_MENU, g_aPlayers[client].daysLeft())
+	menu.SetTitle("%s VIP Menu (%d days left)\n ", PREFIX_MENU, addCommas(g_aPlayers[client].daysLeft()))
 	
 	any aResults = 0;
 	Call_StartForward(g_fwdVipMenuOpen);
