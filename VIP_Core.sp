@@ -204,7 +204,7 @@ public Action Command_AddVIP(int client, int args)
 	
 	if (args != 2)
 	{
-		ReplyToCommand(client, "%s Usage: sm_addvip <steamid> <days>", PREFIX);
+		CReplyToCommand(client, "%s Usage: sm_addvip <steamid> <days>", PREFIX);
 		return Plugin_Handled;
 	}
 	
@@ -218,7 +218,7 @@ public Action Command_AddVIP(int client, int args)
 	{
 		delete rSteam;
 		
-		ReplyToCommand(client, "%s Invalid steamid entered, please try again.", PREFIX);
+		CReplyToCommand(client, "%s Invalid steamid entered, please try again.", PREFIX);
 		return Plugin_Handled;
 	}
 	
@@ -226,7 +226,7 @@ public Action Command_AddVIP(int client, int args)
 	int iDuration = StringToInt(szArg2);
 	if (iDuration < 0)
 	{
-		ReplyToCommand(client, "%s Invalid amount of days entered, please try again.", PREFIX);
+		CReplyToCommand(client, "%s Invalid amount of days entered, please try again.", PREFIX);
 		return Plugin_Handled;
 	}
 	
@@ -454,6 +454,7 @@ void SQL_MakeConnection()
 	if (g_dbDatabase == null)
 		SetFailState("Cannot connect to datbase error: %s", szError);
 	
+	g_dbDatabase.SetCharset("utf8mb4");
 	g_dbDatabase.Query(SQL_CheckForErrors, "CREATE TABLE IF NOT EXISTS `vips` (`auth` VARCHAR(32) NOT NULL, `name` VARCHAR(64) NOT NULL, `expiration` INT(10) NOT NULL, UNIQUE(`auth`))");
 }
 
