@@ -590,12 +590,11 @@ public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, a
 		results.FetchString(0, szAuth, sizeof(szAuth));
 		results.FetchString(1, szName, sizeof(szName));
 		
-		int iExpiration = results.FetchInt(2);
 		char szTime[64];
-		FormatTime(szTime, sizeof(szTime), "%d/%m/%Y %R", iExpiration);
+		FormatTime(szTime, sizeof(szTime), "%d/%m/%Y %R", results.FetchInt(2));
 		
 		Menu menu = new Menu(Handler_ManageVIP);
-		menu.SetTitle("%s Manage VIP - Viewing \"%s\"\nExpire Date: %s\n ", PREFIX_MENU, szName, szTime);
+		menu.SetTitle("%s Manage VIP - Viewing \"%s\"\nExpiration Date: %s\n ", PREFIX_MENU, szName, szTime);
 		menu.AddItem("remove", "Remove VIP");
 		menu.ExitBackButton = true;
 		menu.Display(iClient, MENU_TIME_FOREVER);
