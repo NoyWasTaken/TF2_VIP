@@ -158,7 +158,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 public Action Command_VipMenu(int client, int args)
 {
 	Menu menu = new Menu(Handler_VipMenu);
-	menu.SetTitle("%s VIP Menu (%d days left)\n ", PREFIX_MENU, addCommas(g_aPlayers[client].daysLeft()))
+	menu.SetTitle("%s VIP Menu (%s days left)\n ", PREFIX_MENU, addCommas(g_aPlayers[client].daysLeft()))
 	
 	any aResults = 0;
 	Call_StartForward(g_fwdVipMenuOpen);
@@ -472,9 +472,9 @@ void SQL_LoadUser(int client)
 
 public void SQL_LoadUser_CB(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!strcmp(error, ""))
+	if (strcmp(error, ""))
 	{
-		LogError("Database error, %s", error);
+		LogError("Database error: %s", error);
 		return;
 	}
 	
@@ -544,7 +544,7 @@ void SQL_RemoveVIP(char[] auth)
 
 public void SQL_ManageVips(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!strcmp(error, ""))
+	if (strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
 		return;
@@ -576,7 +576,7 @@ public void SQL_ManageVips(Database db, DBResultSet results, const char[] error,
 
 public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!strcmp(error, ""))
+	if (strcmp(error, ""))
 	{
 		LogError("Database error, %s", error);
 		return;
@@ -603,9 +603,9 @@ public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, a
 
 public void SQL_CheckForErrors(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (!strcmp(error, ""))
+	if (strcmp(error, ""))
 	{
-		LogError("Database error, %s", error);
+		LogError("Database error: %s", error);
 	}
 }
 
