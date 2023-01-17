@@ -130,6 +130,7 @@ public void OnClientPostAdminCheck(int client)
 public Action Event_RoundStart(Event event, char[] name, bool dontBroadcast)
 {
 	g_iRounds++;
+	return Plugin_Continue;
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] args)
@@ -178,6 +179,8 @@ public int Handler_VipMenu(Menu menu, MenuAction action, int client, int itemNum
 		menu.GetItem(itemNum, szBuffer, sizeof(szBuffer));
 		FakeClientCommand(client, "say /%s", szBuffer);
 	}
+	
+	return 0;
 }
 
 public Action Command_VIP(int client, int args)
@@ -254,6 +257,8 @@ public int Handler_MainMenu(Menu menu, MenuAction action, int client, int itemNu
 			SQL_ShowVips(client);
 		}
 	}
+	
+	return 0;
 }
 
 void Menus_SelectPlayer(int client)
@@ -290,12 +295,14 @@ public int Handler_PlayerSelection(Menu menu, MenuAction action, int client, int
 		if (!IsClientInGame(iTarget))
 		{
 			CPrintToChat(client, "%s Target not available anymore.", PREFIX);
-			return;
+			return 0;
 		}
 		
 		g_iTarget[client] = iTarget;
 		Menus_ShowPlayer(client);
 	}
+	
+	return 0;
 }
 
 void Menus_ShowPlayer(int client)
@@ -337,21 +344,21 @@ public int Handler_PlayerManagement(Menu menu, MenuAction action, int client, in
 			{
 				CPrintToChat(client, "%s Target is not available anymore.", PREFIX);
 				Menus_SelectPlayer(client);
-				return;
+				return 0;
 			}
 			
 			if (g_iDuration[client] <= 0)
 			{
 				CPrintToChat(client, "%s Invalid time entered, please try again.", PREFIX);
 				Menus_ShowPlayer(client);
-				return;
+				return 0;
 			}
 			
 			if (g_aPlayers[g_iTarget[client]].isVip())
 			{
 				CPrintToChat(client, "%s Target is already a VIP.", PREFIX);
 				Menus_SelectPlayer(client);
-				return;
+				return 0;
 			}
 			
 			Call_StartForward(g_fwdVipGiven);
@@ -368,6 +375,8 @@ public int Handler_PlayerManagement(Menu menu, MenuAction action, int client, in
 			g_iDuration[client] = 0;
 		}
 	}
+	
+	return 0;
 }
 
 public int Handler_ManageVIPs(Menu menu, MenuAction action, int client, int itemNum)
@@ -383,6 +392,8 @@ public int Handler_ManageVIPs(Menu menu, MenuAction action, int client, int item
 		SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "SELECT * FROM `vips` WHERE `auth` = '%s'", szAuth);
 		g_dbConnection.Query(SQL_FetchVIP, szQuery, GetClientSerial(client));
 	}
+	
+	return 0;
 }
 
 public int Handler_ManageVIP(Menu menu, MenuAction action, int client, int itemNum)
@@ -408,8 +419,9 @@ public int Handler_ManageVIP(Menu menu, MenuAction action, int client, int itemN
 				CShowActivity2(client, PREFIX_ACTIVITY, "Removed vip of \"%s\".", szAuth);
 			}
 		}
-
 	}
+	
+	return 0;
 }
 
 /* */
@@ -439,7 +451,7 @@ int getClientOfAuth(char[] auth)
 	return -1;
 }
 
-char addCommas(int value, const char[] seperator = ",")
+char[] addCommas(int value, const char[] seperator = ",")
 {
 	char buffer[MAX_NAME_LENGTH];
 	buffer[0] = '\0';
