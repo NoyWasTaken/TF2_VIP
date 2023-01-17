@@ -194,12 +194,6 @@ public Action Command_VIP(int client, int args)
 
 public Action Command_AddVIP(int client, int args)
 {
-	if (!client)
-	{
-		PrintToServer("This command is for in-game only.");
-		return Plugin_Handled;
-	}
-	
 	if (args != 2)
 	{
 		CReplyToCommand(client, "%s Usage: sm_addvip <steamid> <days>", PREFIX);
