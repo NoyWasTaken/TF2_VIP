@@ -391,10 +391,24 @@ public int Handler_ManageVIP(Menu menu, MenuAction action, int client, int itemN
 	{
 		SQL_ShowVips(client);
 	} else if (action == MenuAction_Select) {
-		char szAuth[32];
-		menu.GetItem(itemNum, szAuth, sizeof(szAuth));
+		char szAuth[32], szAction[32];
+		menu.GetItem(0, szAuth, sizeof(szAuth));
+		menu.GetItem(itemNum, szAction, sizeof(szAction));
 		
-		SQL_RemoveVIP(szAuth);
+		if(!strcmp(szAction, "remove"))
+		{
+			SQL_RemoveVIP(szAuth);
+			
+			int iTarget = getClientOfAuth(szAuth);
+			if(iTarget != -1)
+			{
+				g_aPlayers[iTarget].expiration = 0;
+				CShowActivity2(client, PREFIX_ACTIVITY, "Removed vip of %N.", iTarget);
+			} else {
+				CShowActivity2(client, PREFIX_ACTIVITY, "Removed vip of \"%s\".", szAuth);
+			}
+		}
+
 	}
 }
 
@@ -412,6 +426,17 @@ int getOnlineUsers()
 	}
 	
 	return iCount;
+}
+
+int getClientOfAuth(char[] auth)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsClientInGame(i) && !strcmp(g_aPlayers[i].auth, auth))
+			return i;
+	}
+	
+	return -1;
 }
 
 char addCommas(int value, const char[] seperator = ",")
@@ -524,15 +549,6 @@ void SQL_RemoveVIP(char[] auth)
 	char szQuery[512];
 	SQL_FormatQuery(g_dbConnection, szQuery, sizeof(szQuery), "DELETE FROM `vips` WHERE `auth` = '%s'", auth);
 	g_dbConnection.Query(SQL_CheckForErrors, szQuery);
-	
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (IsClientInGame(i) && !strcmp(g_aPlayers[i].auth, auth))
-		{
-			g_aPlayers[i].expiration = 0;
-			break;
-		}
-	}
 }
 
 public void SQL_ManageVips(Database db, DBResultSet results, const char[] error, any data)
@@ -588,6 +604,7 @@ public void SQL_FetchVIP(Database db, DBResultSet results, const char[] error, a
 		
 		Menu menu = new Menu(Handler_ManageVIP);
 		menu.SetTitle("%s Manage VIP - Viewing \"%s\"\nExpiration Date: %s\n ", PREFIX_MENU, szName, szTime);
+		menu.AddItem(szAuth, szName, ITEMDRAW_IGNORE);
 		menu.AddItem("remove", "Remove VIP");
 		menu.ExitBackButton = true;
 		menu.Display(iClient, MENU_TIME_FOREVER);
