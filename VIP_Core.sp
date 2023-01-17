@@ -212,7 +212,7 @@ public Action Command_AddVIP(int client, int args)
 	
 	Regex rSteam = new Regex("/^STEAM_[0-5]:[01]:\\d+$/");
 	
-	if (rSteam.Match(szArg) != 1)
+	if (rSteam.Match(szArg) == 1)
 	{
 		delete rSteam;
 		
