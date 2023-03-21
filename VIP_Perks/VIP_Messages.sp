@@ -36,7 +36,7 @@ public void OnClientDisconnect(int client)
 			if (IsClientInGame(i))
 				ShowHudText(i, 0, "VIP %N has disconnected", client);
 		}
+		
+		CPrintToChatAll("%s {vintage}VIP {teal}%N {vintage}disconnected from the server.", PREFIX, client);
 	}
-	
-	CPrintToChatAll("%s {vintage}VIP {teal}%N {vintage}disconnected from the server.", PREFIX, client);
 } 
