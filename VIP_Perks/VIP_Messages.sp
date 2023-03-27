@@ -5,6 +5,11 @@
 #define PLUGIN_AUTHOR "NoyB"
 #define PLUGIN_VERSION "1.0"
 
+ConVar g_cvEnableConnectChat;
+ConVar g_cvEnableConnectHud;
+ConVar g_cvEnableDisconnectChat;
+ConVar g_cvEnableDisconnectHud;
+
 public Plugin myinfo = 
 {
 	name = "[TF2] VIP - Messages Perk", 
@@ -14,29 +19,46 @@ public Plugin myinfo =
 	url = "https://steamcommunity.com/id/noywastaken"
 };
 
+public void OnPluginStart()
+{
+	g_cvEnableConnectChat = CreateConVar("sm_vip_connect_chat", "1", "Should we display a chat message when a VIP player connects?", 0, true, 0.0, true, 1.0);
+	g_cvEnableConnectHud = CreateConVar("sm_vip_connect_hud", "0", "Should we display an HUD message when a VIP player connects?", 0, true, 0.0, true, 1.0);
+	g_cvEnableDisconnectChat = CreateConVar("sm_vip_disconnect_chat", "0", "Should we display a chat message when a VIP player disconnects?", 0, true, 0.0, true, 1.0);
+	g_cvEnableDisconnectHud = CreateConVar("sm_vip_disconnect_hud", "0", "Should we display an HUD message when a VIP player disconnects?", 0, true, 0.0, true, 1.0);
+	AutoExecConfig();
+}
+
 public void VIP_OnPlayerLoaded(int client)
 {
-	SetHudTextParams(-1.0, 0.1, 7.0, 0, 255, 150, 255, 2, 6.0, 0.1, 0.2);
-	for (int i = 1; i <= MaxClients; i++)
+	if (g_cvEnableConnectHud.BoolValue)
 	{
-		if (IsClientInGame(i))
-			ShowHudText(i, 0, "VIP %N has connected", client);
+		SetHudTextParams(-1.0, 0.1, 7.0, 0, 255, 150, 255, 2, 6.0, 0.1, 0.2);
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientInGame(i))
+				ShowHudText(i, 0, "VIP %N has connected", client);
+		}
 	}
 	
-	CPrintToChatAll("%s {vintage}VIP {teal}%N {vintage}connected to the server.", PREFIX, client);
+	if (g_cvEnableConnectChat.BoolValue)
+		CPrintToChatAll("{vintage}VIP {teal}%N {vintage}connected to the server.", client);
 }
 
 public void OnClientDisconnect(int client)
 {
 	if (VIP_IsPlayerVIP(client))
 	{
-		SetHudTextParams(-1.0, 0.1, 7.0, 0, 255, 150, 255, 2, 6.0, 0.1, 0.2);
-		for (int i = 1; i <= MaxClients; i++)
+		if (g_cvEnableDisconnectHud.BoolValue)
 		{
-			if (IsClientInGame(i))
-				ShowHudText(i, 0, "VIP %N has disconnected", client);
+			SetHudTextParams(-1.0, 0.1, 7.0, 0, 255, 150, 255, 2, 6.0, 0.1, 0.2);
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (IsClientInGame(i))
+					ShowHudText(i, 0, "VIP %N has disconnected", client);
+			}
 		}
 		
-		CPrintToChatAll("%s {vintage}VIP {teal}%N {vintage}disconnected from the server.", PREFIX, client);
+		if (g_cvEnableDisconnectChat.BoolValue)
+			CPrintToChatAll("{vintage}VIP {teal}%N {vintage}disconnected from the server.", client);
 	}
 } 
