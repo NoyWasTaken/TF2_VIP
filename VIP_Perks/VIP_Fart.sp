@@ -45,7 +45,7 @@ public void OnClientPostAdminCheck(int client)
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
 {
-	menu.AddItem("fart", "Fart!");
+	menu.InsertItem(0, "fart", "Fart!");
 }
 
 public Action Command_Fart(int client, int args)

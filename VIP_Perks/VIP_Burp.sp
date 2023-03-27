@@ -45,7 +45,7 @@ public void OnClientPostAdminCheck(int client)
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
 {
-	menu.AddItem("burp", "Burp!");
+	menu.InsertItem(0, "burp", "Burp!");
 }
 
 public Action Command_Burp(int client, int args)
