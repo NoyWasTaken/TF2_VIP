@@ -41,4 +41,6 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 		TF2Attrib_SetByName(client, "SPELL: Halloween green flames", 1.0);
 		TF2Attrib_SetByName(client, "SPELL: Halloween pumpkin explosions", 1.0);
 	}
+	
+	return Plugin_Continue;
 } 

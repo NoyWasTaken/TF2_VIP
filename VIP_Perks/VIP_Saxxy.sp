@@ -17,10 +17,10 @@ bool g_bSaxxy[MAXPLAYERS + 1];
 
 public Plugin myinfo = 
 {
-	name = "[TF2] VIP - Saxxy",
-	author = PLUGIN_AUTHOR,
-	description = "",
-	version = PLUGIN_VERSION,
+	name = "[TF2] VIP - Saxxy", 
+	author = PLUGIN_AUTHOR, 
+	description = "", 
+	version = PLUGIN_VERSION, 
 	url = "https://steamcommunity.com/id/noywastaken"
 };
 
@@ -37,12 +37,12 @@ public void OnPluginStart()
 
 public void OnClientCookiesCached(int client)
 {
-	if(VIP_IsPlayerVIP(client))
+	if (VIP_IsPlayerVIP(client))
 	{
 		char szBuffer[16];
 		GetClientCookie(client, g_hCookie, szBuffer, sizeof(szBuffer));
 		
-		if(!strcmp(szBuffer, "true"))
+		if (!strcmp(szBuffer, "true"))
 			g_bSaxxy[client] = true;
 		else
 			g_bSaxxy[client] = false;
@@ -57,11 +57,13 @@ public void OnClientDisconnect(int client)
 public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	if(VIP_IsPlayerVIP(client))
+	if (VIP_IsPlayerVIP(client))
 	{
 		if (g_bSaxxy[client])
 			TF2Items_GiveWeapon(client, SAXXY_INDEX);
 	}
+	
+	return Plugin_Continue;
 }
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
@@ -80,11 +82,11 @@ public Action Command_Saxxy(int client, int args)
 		CReplyToCommand(client, "%s You are not a {axis}VIP {default}member! type {axis}!vips {default}for info.", PREFIX);
 		return Plugin_Handled;
 	}
-
+	
 	g_bSaxxy[client] = !g_bSaxxy[client];
 	SetClientCookie(client, g_hCookie, g_bSaxxy[client] ? "true":"false");
 	
-	if(g_bSaxxy[client])
+	if (g_bSaxxy[client])
 	{
 		if (IsPlayerAlive(client))
 		{

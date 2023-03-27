@@ -99,6 +99,8 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 		if (g_iTrail[client])
 			TF2Attrib_SetByName(client, "SPELL: set Halloween footstep type", float(g_iFootPrintsID[g_iTrail[client]]));
 	}
+	
+	return Plugin_Continue;
 }
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
@@ -158,7 +160,11 @@ public int Handler_Trails(Menu menu, MenuAction action, int client, int itemNum)
 		SetClientCookie(client, g_hCookie, szBuffer);
 		
 		CPrintToChat(client, "%s Changed trail to: %s.", PREFIX, g_szFootPrints[itemNum]);
+	} else if (action == MenuAction_Cancel) {
+		delete menu;
 	}
+	
+	return 0;
 }
 
 /* */

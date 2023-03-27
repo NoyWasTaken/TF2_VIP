@@ -97,6 +97,8 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 		if (g_iColor[client])
 			SetWeaponColors(client, g_iColors[g_iColor[client]][RGB_RED], g_iColors[g_iColor[client]][RGB_GREEN], g_iColors[g_iColor[client]][RGB_BLUE]);
 	}
+	
+	return Plugin_Continue;
 }
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
@@ -152,7 +154,11 @@ public int Handler_WeaponColors(Menu menu, MenuAction action, int client, int it
 		
 		SetWeaponColors(client, g_iColors[itemNum][RGB_RED], g_iColors[itemNum][RGB_GREEN], g_iColors[itemNum][RGB_BLUE]);
 		CPrintToChat(client, "%s Changed weapon color to: %s.", PREFIX, g_szColors[itemNum]);
+	} else if (action == MenuAction_Cancel) {
+		delete menu;
 	}
+	
+	return 0;
 }
 
 /* */

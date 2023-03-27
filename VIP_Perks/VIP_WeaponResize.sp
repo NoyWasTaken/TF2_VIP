@@ -38,12 +38,12 @@ public void OnPluginStart()
 
 public void OnClientCookiesCached(int client)
 {
-	if(VIP_IsPlayerVIP(client))
+	if (VIP_IsPlayerVIP(client))
 	{
 		char szBuffer[10];
 		GetClientCookie(client, g_hCookie, szBuffer, sizeof(szBuffer));
 		
-		if(szBuffer[0] != 0)
+		if (szBuffer[0] != 0)
 			g_fWeaponSize[client] = StringToFloat(szBuffer);
 		else
 			g_fWeaponSize[client] = 0.0;
@@ -63,6 +63,8 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 		if (g_fWeaponSize[client])
 			ResizeWeapons(client);
 	}
+	
+	return Plugin_Continue;
 }
 
 public void VIP_OnMenuOpenned(int client, Menu menu)

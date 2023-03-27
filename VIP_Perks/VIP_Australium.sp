@@ -64,6 +64,8 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 		if (g_bAustralium[client])
 			giveAustraliums(client);
 	}
+	
+	return Plugin_Continue;
 }
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
@@ -102,7 +104,7 @@ void giveAustraliums(int client)
 	{
 		// primary weapon
 		int weaponIndex = getIndexOfWeaponSlot(client, 0);
-		if(weaponIndex != INVALID_WEAPON)
+		if (weaponIndex != INVALID_WEAPON)
 		{
 			int ammo = getAmmo(client, 0);
 			int clip = getClip(client, 0);
@@ -197,7 +199,7 @@ void giveAustraliums(int client)
 		
 		// secondary weapon
 		weaponIndex = getIndexOfWeaponSlot(client, 1);
-		if(weaponIndex != INVALID_WEAPON)
+		if (weaponIndex != INVALID_WEAPON)
 		{
 			int ammo = getAmmo(client, 1);
 			int clip = getClip(client, 1);
