@@ -406,12 +406,12 @@ public int Handler_ManageVIP(Menu menu, MenuAction action, int client, int itemN
 		menu.GetItem(0, szAuth, sizeof(szAuth));
 		menu.GetItem(itemNum, szAction, sizeof(szAction));
 		
-		if(!strcmp(szAction, "remove"))
+		if (!strcmp(szAction, "remove"))
 		{
 			SQL_RemoveVIP(szAuth);
 			
 			int iTarget = getClientOfAuth(szAuth);
-			if(iTarget != -1)
+			if (iTarget != -1)
 			{
 				g_aPlayers[iTarget].expiration = 0;
 				CShowActivity2(client, PREFIX_ACTIVITY, "Removed vip of %N.", iTarget);

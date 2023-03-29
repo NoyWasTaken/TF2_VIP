@@ -10,14 +10,14 @@
 #define SOUNDS_AMOUNT 5
 #define BURP_DELAY 2
 
-int g_iDelayTime[MAXPLAYERS + 1] = 0;
+int g_iDelayTime[MAXPLAYERS + 1] = { 0 };
 
 public Plugin myinfo = 
 {
-	name = "[TF2] VIP - Burp",
-	author = PLUGIN_AUTHOR,
-	description = "",
-	version = PLUGIN_VERSION,
+	name = "[TF2] VIP - Burp", 
+	author = PLUGIN_AUTHOR, 
+	description = "", 
+	version = PLUGIN_VERSION, 
 	url = "https://steamcommunity.com/id/noywastaken"
 };
 
@@ -45,7 +45,7 @@ public void OnClientPostAdminCheck(int client)
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
 {
-	menu.AddItem("burp", "Burp!");
+	menu.InsertItem(0, "burp", "Burp!");
 }
 
 public Action Command_Burp(int client, int args)
@@ -66,4 +66,4 @@ public Action Command_Burp(int client, int args)
 	}
 	
 	return Plugin_Handled;
-}
+} 

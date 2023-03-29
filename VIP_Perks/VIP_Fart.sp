@@ -10,14 +10,14 @@
 #define SOUNDS_AMOUNT 5
 #define FART_DELAY 2
 
-int g_iDelayTime[MAXPLAYERS + 1] = 0;
+int g_iDelayTime[MAXPLAYERS + 1] = { 0 };
 
 public Plugin myinfo = 
 {
-	name = "[TF2] VIP - Fart",
-	author = PLUGIN_AUTHOR,
-	description = "",
-	version = PLUGIN_VERSION,
+	name = "[TF2] VIP - Fart", 
+	author = PLUGIN_AUTHOR, 
+	description = "", 
+	version = PLUGIN_VERSION, 
 	url = "https://steamcommunity.com/id/noywastaken"
 };
 
@@ -45,7 +45,7 @@ public void OnClientPostAdminCheck(int client)
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
 {
-	menu.AddItem("fart", "Fart!");
+	menu.InsertItem(0, "fart", "Fart!");
 }
 
 public Action Command_Fart(int client, int args)
@@ -66,4 +66,4 @@ public Action Command_Fart(int client, int args)
 	}
 	
 	return Plugin_Handled;
-}
+} 

@@ -78,7 +78,7 @@ public void TF2_OnConditionAdded(int client, TFCond condition)
 {
 	if (VIP_IsPlayerVIP(client) && g_iEffect[client] && condition == TFCond_Taunting)
 	{
-		float fPos[3] = 0.0;
+		float fPos[3] = { 0.0 };
 		GetEntPropVector(client, Prop_Send, "m_vecOrigin", fPos, 0);
 		g_iParticle[client] = createParticle(client, g_szEffects[g_iEffect[client]][EFFECT_PARTICLE], fPos);
 	}
@@ -145,7 +145,11 @@ public int Handler_Effects(Menu menu, MenuAction action, int client, int itemNum
 		SetClientCookie(client, g_hCookie, szBuffer);
 		
 		CPrintToChat(client, "%s Changed taunt effect to: %s.", PREFIX, g_szEffects[itemNum][EFFECT_DISPLAY_NAME]);
+	} else if (action == MenuAction_Cancel) {
+		delete menu;
 	}
+	
+	return 0;
 }
 
 /* */

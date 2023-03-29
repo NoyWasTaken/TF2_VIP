@@ -2,15 +2,15 @@
 **
 */
 #if defined _VIP_CORE_included
- #endinput
+#endinput
 #endif
 #define _VIP_CORE_included
 
 #define DATABASE_ENTRY "playil_vip"
 
-#define PREFIX "{lime}[Play-IL]{default}"
-#define PREFIX_ACTIVITY "{lime}[Play-IL]{default} "
-#define PREFIX_MENU "[Play-IL]"
+#define PREFIX "{lime}[Level9]{default}"
+#define PREFIX_ACTIVITY "{lime}[Level9]{default} "
+#define PREFIX_MENU "[Level9]"
 
 /**
 * Check if player is a vip.
@@ -52,13 +52,13 @@ public __pl_VIP_CORE_SetNTVOptional()
 }
 #endif
 
-public SharedPlugin __pl_VIP =
+public SharedPlugin __pl_VIP = 
 {
-	name = "[TF2] VIP - Core",
-	file = "VIP_Core.smx",
+	name = "[TF2] VIP - Core", 
+	file = "VIP_Core.smx", 
 	#if defined REQUIRE_PLUGIN
-	required = 1,
+	required = 1, 
 	#else
-	required = 0,
+	required = 0, 
 	#endif
-};
+}; 

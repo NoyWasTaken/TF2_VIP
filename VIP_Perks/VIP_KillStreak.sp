@@ -146,6 +146,8 @@ public Action Event_PlayerRegen(Event event, char[] name, bool dontBroadcast)
 			}
 		}
 	}
+	
+	return Plugin_Continue;
 }
 
 public void VIP_OnMenuOpenned(int client, Menu menu)
@@ -203,7 +205,11 @@ public int Handler_MainMenu(Menu menu, MenuAction action, int client, int itemNu
 		} else if (!strcmp(szInfo, "sheen")) {
 			Menus_ShowSheen(client);
 		}
+	} else if (action == MenuAction_Cancel) {
+		delete menu;
 	}
+	
+	return 0;
 }
 
 void Menus_ShowType(int client)
@@ -234,7 +240,11 @@ public int Handler_TypeMenu(Menu menu, MenuAction action, int client, int itemNu
 		CPrintToChat(client, "%s You changed your killstreak type to: %s.", PREFIX, g_szTypes[itemNum]);
 		
 		Menus_ShowType(client);
+	} else if (action == MenuAction_Cancel) {
+		delete menu;
 	}
+	
+	return 0;
 }
 
 void Menus_ShowEffect(int client)
@@ -265,7 +275,11 @@ public int Handler_EffectMenu(Menu menu, MenuAction action, int client, int item
 		CPrintToChat(client, "%s You changed your killstreak effect to: %s.", PREFIX, g_szEffects[itemNum]);
 		
 		Menus_ShowEffect(client);
+	} else if (action == MenuAction_Cancel) {
+		delete menu;
 	}
+	
+	return 0;
 }
 
 void Menus_ShowSheen(int client)
@@ -296,7 +310,11 @@ public int Handler_SheenMenu(Menu menu, MenuAction action, int client, int itemN
 		CPrintToChat(client, "%s You changed your killstreak sheen to: %s.", PREFIX, g_szSheens[itemNum]);
 		
 		Menus_ShowSheen(client);
+	} else if (action == MenuAction_Cancel) {
+		delete menu;
 	}
+	
+	return 0;
 }
 
 /* */
