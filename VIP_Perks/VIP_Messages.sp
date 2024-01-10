@@ -21,9 +21,9 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	g_cvEnableConnectChat = CreateConVar("sm_vip_connect_chat", "1", "Should we display a chat message when a VIP player connects?", 0, true, 0.0, true, 1.0);
+	g_cvEnableConnectChat = CreateConVar("sm_vip_connect_chat", "1", "Should we send a chat message when a VIP player connects?", 0, true, 0.0, true, 1.0);
 	g_cvEnableConnectHud = CreateConVar("sm_vip_connect_hud", "0", "Should we display an HUD message when a VIP player connects?", 0, true, 0.0, true, 1.0);
-	g_cvEnableDisconnectChat = CreateConVar("sm_vip_disconnect_chat", "0", "Should we display a chat message when a VIP player disconnects?", 0, true, 0.0, true, 1.0);
+	g_cvEnableDisconnectChat = CreateConVar("sm_vip_disconnect_chat", "0", "Should we send a chat message when a VIP player disconnects?", 0, true, 0.0, true, 1.0);
 	g_cvEnableDisconnectHud = CreateConVar("sm_vip_disconnect_hud", "0", "Should we display an HUD message when a VIP player disconnects?", 0, true, 0.0, true, 1.0);
 	AutoExecConfig();
 }

@@ -47,6 +47,10 @@ An advanced VIP management system made for Play-IL's TF2 community.
 
 # Cvars
 - sm_vip_flags - (Default: t - CUSTOM6) Flags to give to the vip users (Requires VIP_Flags.smx).
+- sm_vip_connect_chat (Default 1) Should we send a chat message when a VIP player connects? (Requires VIP_Messages.smx).
+- sm_vip_connect_hud (Default 0) Should we display an HUD message when a VIP player connects? (Requires VIP_Messages.smx).
+- sm_vip_disconnect_chat (Default 0) Should we send a chat message when a VIP player disconnects? (Requires VIP_Messages.smx).
+- sm_vip_disconnect_hud (Default 0) Should we display an HUD message when a VIP player disconnects? (Requires VIP_Messages.smx).
 
 # Commands
 - sm_vip - (Default Access: Root) Opens the VIP management menu.
