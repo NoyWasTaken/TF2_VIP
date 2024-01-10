@@ -47,10 +47,14 @@ An advanced VIP management system made for Play-IL's TF2 community.
 
 # Cvars
 - sm_vip_flags - (Default: t - CUSTOM6) Flags to give to the vip users (Requires VIP_Flags.smx).
-- sm_vip_connect_chat (Default 1) Should we send a chat message when a VIP player connects? (Requires VIP_Messages.smx).
-- sm_vip_connect_hud (Default 0) Should we display an HUD message when a VIP player connects? (Requires VIP_Messages.smx).
-- sm_vip_disconnect_chat (Default 0) Should we send a chat message when a VIP player disconnects? (Requires VIP_Messages.smx).
-- sm_vip_disconnect_hud (Default 0) Should we display an HUD message when a VIP player disconnects? (Requires VIP_Messages.smx).
+- sm_vip_connect_chat (Default: 1) Should we send a chat message when a VIP player connects? (Requires VIP_Messages.smx).
+- sm_vip_connect_hud (Default: 0) Should we display an HUD message when a VIP player connects? (Requires VIP_Messages.smx).
+- sm_vip_disconnect_chat (Default: 0) Should we send a chat message when a VIP player disconnects? (Requires VIP_Messages.smx).
+- sm_vip_disconnect_hud (Default: 0) Should we display an HUD message when a VIP player disconnects? (Requires VIP_Messages.smx).
+- sm_vip_tag (Default: "[VIP]") Tag to add in the chat for the VIP players (Requires VIP_Chat.smx)
+- sv_vip_tag_color (Default: "#FFD700") Color to put for the tag (Requires VIP_Chat.smx)
+- sv_vip_chat_color (Default: "#FFD700") Color to put for the chat messages (Requires VIP_Chat.smx)
+- sm_vip_tag_for_admins (Default 0) Should we add tags if the user is an admin? (Requires VIP_Chat.smx)
 
 # Commands
 - sm_vip - (Default Access: Root) Opens the VIP management menu.
