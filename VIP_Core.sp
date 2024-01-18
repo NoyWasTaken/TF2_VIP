@@ -4,7 +4,7 @@
 #include <VIP_Core>
 
 #define PLUGIN_AUTHOR "NoyB"
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.2"
 
 #define DAY_TO_SECONDS 86400
 

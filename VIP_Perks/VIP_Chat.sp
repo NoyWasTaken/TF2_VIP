@@ -31,8 +31,8 @@ public void OnPluginStart()
 {
 	g_cvTag = CreateConVar("sm_vip_tag", "[VIP]", "Tag to add in the chat for the VIP players");
 	g_cvTagColor = CreateConVar("sv_vip_tag_color", "#FFD700", "Color to put for the tag");
-	g_cvChatColor = CreateConVar("sv_vip_chat_color", "#FFD700", "Color to put for the VIP's chat messages");
-	g_cvEnableOnAdmins = CreateConVar("sm_vip_admins", "0", "Should we add tags if the user is an admin?", 0, true, 0.0, true, 1.0);
+	g_cvChatColor = CreateConVar("sv_vip_chat_color", "#FFD700", "Color to put for the chat messages");
+	g_cvEnableOnAdmins = CreateConVar("sm_vip_tag_for_admins", "0", "Should we add tags if the user is an admin?", 0, true, 0.0, true, 1.0);
 	
 	g_cvTag.AddChangeHook(OnCvarChange);
 	g_cvTagColor.AddChangeHook(OnCvarChange);
