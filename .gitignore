@@ -9,4 +9,8 @@
 # Local History for Visual Studio Code
 .history/
 
-plugins/
+# Mac OS
+.DS_Store
+
+# Plugins Directories
+src/addons/sourceod/plugins
