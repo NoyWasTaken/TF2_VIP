@@ -3,44 +3,29 @@
 #include <clientprefs>
 #include <tf2>
 #include <tf2_stocks>
+#include <tf_econ_data>
 #include <VIP_Core>
 
 #define PLUGIN_AUTHOR "NoyB"
 #define PLUGIN_VERSION "1.0"
 
-#define EFFECT_PARTICLE 0
-#define EFFECT_DISPLAY_NAME 1
+#define INVALID_INDEX -1
 
-Handle g_hCookie;
+#define EFFECT_NAME_FORMAT "Attrib_Particle%d"
 
-int g_iEffect[MAXPLAYERS + 1];
-int g_iParticle[MAXPLAYERS + 1];
+enum struct ParsedEffect
+{
+	int index;
+	char name[64];
+	char particleName[64];
+}
 
-char g_szEffects[][][] = {
-	{ "", "No Effect" }, 
-	{ "utaunt_firework_teamcolor_red", "Showstopper (RED)" }, 
-	{ "utaunt_firework_teamcolor_blue", "Showstopper (BLUE)" }, 
-	{ "utaunt_beams_yellow", "Holy Grail" }, 
-	{ "utaunt_disco_party", "'72" }, 
-	{ "utaunt_hearts_glow_parent", "Fountain of Delight" }, 
-	{ "utaunt_meteor_parent", "Screaming Tiger" }, 
-	{ "utaunt_cash_confetti", "Skill Gotten Gains" }, 
-	{ "utaunt_tornado_parent_black", "Midnight Whirlwind" }, 
-	{ "utaunt_tornado_parent_black", "Silver Cyclone" }, 
-	{ "utaunt_lightning_parent", "Mega Strike" }, 
-	{ "utaunt_souls_green_parent", "Souls Green" }, 
-	{ "utaunt_souls_purple_parent", "Souls Purple" }, 
-	{ "utaunt_hellpit_parent", "Hell Pit" }, 
-	{ "utaunt_hellswirl", "Hell Swirl" }, 
-	{ "utaunt_headless", "Headless" }, 
-	{ "utaunt_merasmus", "Merasmus" }, 
-	{ "utaunt_bubbles_glow_green_parent", "Bubbles Glow Green" }, 
-	{ "utaunt_bubbles_glow_orange_parent", "Bubbles Glow Orange" }, 
-	{ "utaunt_bubbles_glow_purple_parent", "Bubbles Glow Purple" }, 
-	{ "utaunt_firework_dragon_parent", "Firework Dragon" }, 
-	{ "utaunt_smoke_moon_parent", "Smoke Moon" }, 
-	{ "utaunt_smoke_moon_green_parent", "Smoke Moon Green" }
-};
+ArrayList g_alParsedEffects = null;
+StringMap g_smTokensMap = null;
+Handle g_hCookie = INVALID_HANDLE;
+
+int g_iEffect[MAXPLAYERS + 1] = { 0 };
+int g_iParticle[MAXPLAYERS + 1] = { 0 };
 
 public Plugin myinfo = 
 {
@@ -53,8 +38,12 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	/* Handles */
+	g_smTokensMap = ParseLanguage("english");
+	g_alParsedEffects = parseEffects();
 	g_hCookie = RegClientCookie("vip_taunt_effect", "Taunt effect of VIP players.", CookieAccess_Protected);
 	
+	/* Commands */
 	RegConsoleCmd("sm_utaunt", Command_Effects);
 }
 
@@ -68,25 +57,31 @@ public void OnClientCookiesCached(int client)
 		GetClientCookie(client, g_hCookie, szBuffer, sizeof(szBuffer));
 		
 		if (szBuffer[0] != 0)
-			g_iEffect[client] = StringToInt(szBuffer);
+		{
+			int iEffectIndex = StringToInt(szBuffer);
+			g_iEffect[client] = getEffectListIndex(iEffectIndex);
+		}
 		else
-			g_iEffect[client] = 0;
+			g_iEffect[client] = INVALID_INDEX;
 	}
 }
 
 public void TF2_OnConditionAdded(int client, TFCond condition)
 {
-	if (VIP_IsPlayerVIP(client) && g_iEffect[client] && condition == TFCond_Taunting)
+	if (VIP_IsPlayerVIP(client) && g_iEffect[client] != INVALID_INDEX && condition == TFCond_Taunting)
 	{
 		float fPos[3] = { 0.0 };
 		GetEntPropVector(client, Prop_Send, "m_vecOrigin", fPos, 0);
-		g_iParticle[client] = createParticle(client, g_szEffects[g_iEffect[client]][EFFECT_PARTICLE], fPos);
+		
+		ParsedEffect peEffect;
+		g_alParsedEffects.GetArray(g_iEffect[client], peEffect);
+		g_iParticle[client] = createParticle(client, peEffect.particleName, fPos);
 	}
 }
 
 public void TF2_OnConditionRemoved(int client, TFCond condition)
 {
-	if (g_iEffect[client] && condition == TFCond_Taunting)
+	if (VIP_IsPlayerVIP(client) && g_iEffect[client] != INVALID_INDEX && condition == TFCond_Taunting)
 	{
 		if (IsValidEntity(g_iParticle[client]))
 			AcceptEntityInput(g_iParticle[client], "Kill");
@@ -123,9 +118,15 @@ void Menus_ShowEffects(int client)
 	Menu menu = new Menu(Handler_Effects);
 	menu.SetTitle("%s Select an Effect\n ", PREFIX_MENU);
 	
-	for (int i = 0; i < sizeof(g_szEffects); i++)
+	for (int i = 0; i < g_alParsedEffects.Length; i++)
 	{
-		menu.AddItem(g_szEffects[i][EFFECT_PARTICLE], g_szEffects[i][EFFECT_DISPLAY_NAME]);
+		ParsedEffect peEffect;
+		g_alParsedEffects.GetArray(i, peEffect);
+		
+		char szListIndex[10];
+		IntToString(i, szListIndex, sizeof(szListIndex));
+		
+		menu.AddItem(szListIndex, peEffect.name);
 	}
 	
 	menu.ExitBackButton = true;
@@ -138,13 +139,23 @@ public int Handler_Effects(Menu menu, MenuAction action, int client, int itemNum
 	{
 		FakeClientCommandEx(client, "sm_vip");
 	} else if (action == MenuAction_Select) {
-		g_iEffect[client] = itemNum;
+		char szListIndex[10];
+		menu.GetItem(itemNum, szListIndex, sizeof(szListIndex));
 		
-		char szBuffer[10];
-		IntToString(itemNum, szBuffer, sizeof(szBuffer));
-		SetClientCookie(client, g_hCookie, szBuffer);
+		int iListIndex = StringToInt(szListIndex);
 		
-		CPrintToChat(client, "%s Changed taunt effect to: %s.", PREFIX, g_szEffects[itemNum][EFFECT_DISPLAY_NAME]);
+		ParsedEffect peEffect;
+		g_alParsedEffects.GetArray(iListIndex, peEffect);
+		
+		/* Update Cookie */
+		char szEffectIndex[10];
+		IntToString(peEffect.index, szEffectIndex, sizeof(szEffectIndex))
+		SetClientCookie(client, g_hCookie, szEffectIndex);
+		/* */
+		
+		g_iEffect[client] = iListIndex;
+		
+		CPrintToChat(client, "%s Changed taunt effect to: %s.", PREFIX, peEffect.name);
 	} else if (action == MenuAction_Cancel) {
 		delete menu;
 	}
@@ -156,13 +167,67 @@ public int Handler_Effects(Menu menu, MenuAction action, int client, int itemNum
 
 /* Functions */
 
+int getEffectListIndex(int effectIndex)
+{
+	for (int i = 0; i < g_alParsedEffects.Length; i++)
+	{
+		ParsedEffect peEffect;
+		g_alParsedEffects.GetArray(i, peEffect);
+		
+		if (peEffect.index == effectIndex)
+			return i;
+	}
+	
+	return INVALID_INDEX;
+}
+
+ArrayList parseEffects()
+{
+	ArrayList alParsedEffects = new ArrayList(sizeof(ParsedEffect));
+	
+	/* Loop through the effects and parse them */
+	ArrayList alEffects = TF2Econ_GetParticleAttributeList(ParticleSet_TauntUnusualEffects)
+	for (int i = 0; i < alEffects.Length; i++)
+	{
+		int iEffectIndex = alEffects.Get(i);
+		
+		/* Get Particle Name */
+		char szParticleName[64];
+		if (!TF2Econ_GetParticleAttributeSystemName(iEffectIndex, szParticleName, sizeof(szParticleName)))
+		{
+			LogError("Failed to get an effect name on index #%d", iEffectIndex);
+			continue;
+		}
+		/* */
+		
+		/* Parse Translation Name */
+		char szAttribName[64];
+		FormatEx(szAttribName, sizeof(szAttribName), EFFECT_NAME_FORMAT, iEffectIndex);
+		
+		char szParsedName[64];
+		if (!LocalizeToken(szAttribName, szParsedName, sizeof(szParsedName)))
+			strcopy(szParsedName, sizeof(szParsedName), szAttribName);
+		/* */
+		
+		ParsedEffect peEffect;
+		peEffect.index = iEffectIndex;
+		strcopy(peEffect.name, sizeof(peEffect.name), szParsedName);
+		strcopy(peEffect.particleName, sizeof(peEffect.particleName), szParticleName);
+		
+		alParsedEffects.PushArray(peEffect);
+	}
+	
+	return alParsedEffects;
+}
+
 int createParticle(int client, char[] effect, float fPos[3])
 {
 	int iParticle = CreateEntityByName("info_particle_system", -1);
-	char szName[16];
 	if (iParticle != -1)
 	{
 		TeleportEntity(iParticle, fPos, NULL_VECTOR, NULL_VECTOR);
+		
+		char szName[16];
 		FormatEx(szName, sizeof(szName), "target%d", client);
 		DispatchKeyValue(client, "targetname", szName);
 		DispatchKeyValue(iParticle, "targetname", "tf2particle");
@@ -175,7 +240,115 @@ int createParticle(int client, char[] effect, float fPos[3])
 		AcceptEntityInput(iParticle, "start");
 		return iParticle;
 	}
+	
 	return -1;
 }
 
 /* */
+
+/*
+	Localization Functions
+	Taken from: https://github.com/x07x08/TF2-Econ-Taunts/blob/main/addons/sourcemod/scripting/TF2EconUnusualTaunts.sp
+	(originally from https://github.com/DoctorMcKay/sourcemod-plugins/blob/master/scripting/enhanced_items.sp)
+*/
+
+bool LocalizeToken(const char[] token, char[] output, int maxLen)
+{
+	if (g_smTokensMap == null)
+	{
+		LogError("Unable to localize token for server language!");
+		return false;
+	}
+	
+	return g_smTokensMap.GetString(token, output, maxLen);
+}
+
+StringMap ParseLanguage(const char[] strLanguage)
+{
+	char strFilename[64];
+	Format(strFilename, sizeof(strFilename), "resource/tf_%s.txt", strLanguage);
+	File hFile = OpenFile(strFilename, "r");
+	
+	if (hFile == null)
+	{
+		LogError("Couldn't find language file for %s", strLanguage);
+		return null;
+	}
+	
+	// The localization files are encoded in UCS-2, breaking all of our available parsing options
+	// We have to go byte-by-byte then line-by-line :(
+	
+	// This parser isn't perfect since some values span multiple lines, but since we're only interested in single-line values, this is sufficient
+	
+	StringMap hLang = new StringMap();
+	hLang.SetString("__name__", strLanguage);
+	
+	int iData, i = 0;
+	char strLine[2048];
+	
+	while (ReadFileCell(hFile, iData, 2) == 1)
+	{
+		if (iData < 0x80)
+		{
+			// It's a single-byte character
+			strLine[i++] = iData;
+			
+			if (iData == '\n')
+			{
+				strLine[i] = '\0';
+				HandleLangLine(strLine, hLang);
+				i = 0;
+			}
+		}
+		else if (iData < 0x800)
+		{
+			// It's a two-byte character
+			strLine[i++] = (iData >> 6) | 0xC0;
+			strLine[i++] = (iData & 0x3F) | 0x80;
+		}
+		else if (iData < 0xFFFF && iData >= 0xD800 && iData <= 0xDFFF)
+		{
+			strLine[i++] = (iData >> 12) | 0xE0;
+			strLine[i++] = ((iData >> 6) & 0x3F) | 0x80;
+			strLine[i++] = (iData & 0x3F) | 0x80;
+		}
+		else if (iData >= 0x10000 && iData < 0x10FFFF)
+		{
+			strLine[i++] = (iData >> 18) | 0xF0;
+			strLine[i++] = ((iData >> 12) & 0x3F) | 0x80;
+			strLine[i++] = ((iData >> 6) & 0x3F) | 0x80;
+			strLine[i++] = (iData & 0x3F) | 0x80;
+		}
+	}
+	
+	delete hFile;
+	
+	return hLang;
+}
+
+void HandleLangLine(char[] strLine, StringMap hLang)
+{
+	TrimString(strLine);
+	
+	if (strLine[0] != '"')
+	{
+		// Not a line containing at least one quoted string
+		return;
+	}
+	
+	char strToken[128], strValue[1024];
+	int iPos = BreakString(strLine, strToken, sizeof(strToken));
+	
+	if (iPos == -1)
+	{
+		// This line doesn't have two quoted strings
+		return;
+	}
+	
+	BreakString(strLine[iPos], strValue, sizeof(strValue));
+	
+	if (StrContains(strToken, "Attrib_Particle") != -1) // Only particles should be added
+	{
+		hLang.SetString(strToken, strValue);
+	}
+}
